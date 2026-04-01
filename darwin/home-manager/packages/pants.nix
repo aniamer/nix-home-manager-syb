@@ -7,8 +7,8 @@ stdenv.mkDerivation {
 
   src = fetchurl {
     url =
-      "https://github.com/pantsbuild/scie-pants/releases/download/v0.11.0/scie-pants-macos-aarch64";
-    sha256 = "5e847e91ad908eeb41b4fadb92c0b8c05938991c350d4940d25ce23b1f2ce97e";
+      "https://github.com/pantsbuild/scie-pants/releases/download/v0.12.0/scie-pants-macos-aarch64";
+    sha256 = "d476bc1803a5ee6595ba718a7fb20d3236abfa39cb5da0c43d2b6a13e90adc3e";
   };
 
   installPhase = ''

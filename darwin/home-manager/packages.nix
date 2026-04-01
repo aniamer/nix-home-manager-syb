@@ -1,4 +1,4 @@
-{ unstable, pkgs }:
+{ pkgs }:
 
 let
   # pkgsMaster = import (fetchTarball "https://github.com/nixos/nixpkgs/archive/master.tar.gz") {};
@@ -10,30 +10,36 @@ let
   sloth = pkgs.callPackage ./packages/sloth.nix { };
   adr = pkgs.callPackage ./packages/adr.nix { };
   vlc = pkgs.callPackage ./packages/vlc.nix { };
-  wombat = pkgs.callPackage ./packages/wombat.nix { };
   tunnelblick = pkgs.callPackage ./packages/tunnelblick.nix { };
   pants = pkgs.callPackage ./packages/pants.nix { };
-  fonts = with pkgs; [ fira-code monaspace ];
-
+  vfkit = pkgs.callPackage ./packages/vfkit.nix { };
+  fluxcd = pkgs.callPackage ./packages/fluxcd.nix { };
+  fonts = with pkgs; [
+    fira-code
+    monaspace
+  ];
   gitTools = with pkgs; [
     delta
     diff-so-fancy
     git-absorb
     git-branchless
-    git-codeowners
     git-open
     git-ps-rs
-    spr
-    nodePackages_latest.graphite-cli
+    graphite-cli
   ];
 
   nixTools = with pkgs; [ cachix ];
 
-  jsPackages = with pkgs; [ bun deno nodejs_latest ];
+  jsPackages = with pkgs; [
+    bun
+    deno
+    nodejs_latest
+  ];
+
+  #coreutils = with oldPkgs; [ coreutils ];
 
   k8sPackages = with pkgs; [
     # kubenti
-    unstable.fluxcd
     (google-cloud-sdk.withExtraComponents [
       google-cloud-sdk.components.gke-gcloud-auth-plugin-darwin-arm
       pkgs.google-cloud-sdk.components.bigtable
@@ -52,8 +58,8 @@ let
     rancher
     sloth
     terraform
+    fluxcd
   ];
-
   homePackages = with pkgs; [
     # adr
     altair
@@ -64,7 +70,6 @@ let
     cmake
     fd
     ffmpeg
-    gopls
     go-outline
     # graalvm19-ce
     grpcurl
@@ -73,31 +78,49 @@ let
     keybase
     # mkchromecast
     ninja
-    nixfmt
-    obsidian
-    python3
+    nixfmt-rfc-style
+    python312
+
     reattach-to-user-namespace
     rectangle
     ripgrep
-    rnix-lsp
     ruby
     scala
     slack
     syb-cli
-    # sqlitebrowser
     tree
     tunnelblick
     yarn
     yq-go
-    youtube-dl
-    # openjdk17
     vlc
-    wombat
+    grpcui
     zlib
     _1password-gui
-    spicedb-zed
-    protobuf3_20
+    protobuf
     pants
+    coursier
+    sops
+    skopeo
+    gnutar
+    xz
+    pyenv
+    clojure
+    leiningen
+    vfkit
+    yamllint
+    poetry
+    tree-sitter
+    tree-sitter-grammars.tree-sitter-python
+    goreleaser
+    postman
+    golangci-lint
+    redis
+    (lib.hiPrio spicedb-zed)
+    prometheus-node-exporter
+    zoxide
+    gnutar
+    iterm2
   ];
 
-in fonts ++ homePackages ++ gitTools ++ nixTools ++ jsPackages ++ k8sPackages
+in
+fonts ++ homePackages ++ gitTools ++ nixTools ++ jsPackages ++ k8sPackages

@@ -2,12 +2,12 @@
 
 buildGoModule rec {
   pname = "syb-cli";
-  version = "81642dd";
+  version = "6eff538";
 
   src = builtins.fetchGit {
     url = "git@github.com:soundtrackyourbrand/syb-cli.git";
-    rev = "a719e2325f3b639de91b295956fdbe63ddef3628";
+    rev = "6eff538bdaf9818d24b86390dae3c0e4d01afbb8";
   };
 
-  vendorSha256 = null;
+  vendorHash = null;
 }

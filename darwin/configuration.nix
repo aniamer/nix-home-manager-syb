@@ -11,7 +11,7 @@
 
   # Auto upgrade nix package and the daemon service.
   services.nix-daemon.enable = true;
-  # nix.package = pkgs.nix;
+  nix.package = pkgs.nix;
 
   # Create /etc/bashrc that loads the nix-darwin environment.
   programs.zsh.enable = true;  # default shell on catalina
@@ -72,7 +72,7 @@
   # faster resize animations
   system.defaults.NSGlobalDomain.NSWindowResizeTime = 0.05;
 
-  
+
   # expand printer dialog
   system.defaults.NSGlobalDomain.PMPrintingExpandedStateForPrint = true;
   system.defaults.NSGlobalDomain.PMPrintingExpandedStateForPrint2 = true;
@@ -115,5 +115,5 @@
   system.defaults.finder.FXEnableExtensionChangeWarning = false;
 
 
-  system.stateVersion = 4; 
+  system.stateVersion = 4;
 }

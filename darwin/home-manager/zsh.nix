@@ -17,16 +17,16 @@
     lock = "pmset displaysleepnow";
     "nix-sha256" = "nix-hash --to-base32 --type sha256";
   };
-  enableAutosuggestions = true;
-  enableCompletion = true;
+  autosuggestion.enable = true;
+  enableCompletion = false;
   autocd = false;
   history = {
     save = 50000;
     size = 50000;
     share = true;
   };
-  initExtra = builtins.concatStringsSep "\n" [
-        # ''. "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh"'' 
+  initContent = builtins.concatStringsSep "\n" [
+        # ''. "$HOME/.nix-profile/etc/profile.d/hm-session-vars.sh"''
         (builtins.readFile ./zsh/init.sh)
         (builtins.readFile ./zsh/kube-context-switch.sh)
         (builtins.readFile ./zsh/app-launcher.sh)
@@ -41,31 +41,40 @@
 
   plugins = [
     {
-      name = "zsh-autosuggestions";
+      name = "zsh-autocomplete";
       src = pkgs.fetchFromGitHub {
-        owner = "zsh-users";
-        repo = "zsh-autosuggestions";
-        rev = "v0.6.4";
-        sha256 = "0h52p2waggzfshvy1wvhj4hf06fmzd44bv6j18k3l9rcx6aixzn6";
+        owner = "marlonrichert";
+        repo = "zsh-autocomplete";
+        rev = "25.03.19";
+        sha256 = "eb5a5WMQi8arZRZDt4aX1IV+ik6Iee3OxNMCiMnjIx4=";
       };
     }
-    {
-      name = "wting";
-      src = pkgs.fetchFromGitHub {
-        owner = "wting";
-        repo = "autojump";
-        rev = "release-v22.5.3";
-        sha256 = "1rgpsh70manr2dydna9da4x7p8ahii7dgdgwir5fka340n1wrcws";
-      };
-    }
-    {
-      name = "macos";
-      src = pkgs.fetchFromGitHub {
-        owner = "joow";
-        repo = "macos";
-        rev = "76bb298dc0ff5c5a1c640fe8f33f09c68b9af239";
-        sha256 = "13mq0dq2y7d4m5cxxj13mbplk53kgg3j3f2id89klaw28kh9jrvs";
-      };
-    }
+    # {
+    #   name = "zsh-autosuggestions";
+    #   src = pkgs.fetchFromGitHub {
+    #     owner = "zsh-users";
+    #     repo = "zsh-autosuggestions";
+    #     rev = "v0.6.4";
+    #     sha256 = "0h52p2waggzfshvy1wvhj4hf06fmzd44bv6j18k3l9rcx6aixzn6";
+    #   };
+    # }
+    # {
+    #   name = "wting";
+    #   src = pkgs.fetchFromGitHub {
+    #     owner = "wting";
+    #     repo = "autojump";
+    #     rev = "release-v22.5.3";
+    #     sha256 = "1rgpsh70manr2dydna9da4x7p8ahii7dgdgwir5fka340n1wrcws";
+    #   };
+    # }
+    # {
+    #   name = "macos";
+    #   src = pkgs.fetchFromGitHub {
+    #     owner = "joow";
+    #     repo = "macos";
+    #     rev = "76bb298dc0ff5c5a1c640fe8f33f09c68b9af239";
+    #     sha256 = "13mq0dq2y7d4m5cxxj13mbplk53kgg3j3f2id89klaw28kh9jrvs";
+    #   };
+    # }
   ];
 }

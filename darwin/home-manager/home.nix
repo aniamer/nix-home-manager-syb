@@ -1,34 +1,34 @@
 { config, pkgs, lib, ... }:
 
 let
-  unstable = import (builtins.fetchTarball
-    "https://github.com/nixos/nixpkgs/archive/refs/heads/nixpkgs-unstable.tar.gz") {
-      config = config.nixpkgs.config;
-    };
-
-  firefox-darwin = pkgs.callPackage ./packages/firefox.nix { };
-
-  vscode-elixir = pkgs.callPackage ./vscode/elixir.nix { };
   vscode-monochrome = pkgs.callPackage ./vscode/monochrome.nix { };
   vscode-monochrome-dark = pkgs.callPackage ./vscode/monochrome-dark.nix { };
   vscode-copilot = pkgs.callPackage ./vscode/copilot.nix { };
   vscode-quickopener = pkgs.callPackage ./vscode/quickopener.nix { };
-  externalPackages = import ./packages.nix { inherit pkgs unstable; };
-  allPackages = externalPackages ++ [ firefox-darwin ];
+  externalPackages = import ./packages.nix { inherit pkgs ; };
+  allPackages = externalPackages ;
 in {
   nixpkgs = {
-    # overlays = [ipythonFix];
+    overlays = [(final: prev: {
+      inetutils = prev.inetutils.overrideAttrs (oldAttrs: rec {
+        version = "2.6";
+        src = prev.fetchurl {
+          url = "mirror://gnu/inetutils/inetutils-${version}.tar.xz";
+          hash = "sha256-aL7b/q9z99hr4qfZm8+9QJPYKfUncIk5Ga4XTAsjV8o=";
+        };
+      });
+    })];
 
     config = {
       allowUnfree = true;
       allowUnsupportedSystem = true;
       allowBroken = true;
       packageOverrides = pkgs: {
-        nur = import (builtins.fetchTarball
-          "https://github.com/nix-community/NUR/archive/master.tar.gz") {
-            inherit pkgs;
-          };
-      };
+         nur = import (builtins.fetchTarball
+           "https://github.com/nix-community/NUR/archive/master.tar.gz") {
+             inherit pkgs;
+           };
+       };
     };
   };
 
@@ -45,12 +45,11 @@ in {
 
     eza = {
       enable = true;
-      enableAliases = true;
     };
 
     firefox = {
       enable = true;
-      package = firefox-darwin;
+      #package = firefox-darwin;
       # extraPolicies = {
       #   DisableFirefoxStudies = true;
       #   DisablePocket = true;
@@ -69,16 +68,16 @@ in {
         ani = {
           id = 0;
           settings = {
-            "app.update.auto" = false;
+            "app.update.auto" = true;
             "signon.rememberSignons" = false;
             "browser.casting.enabled" = true;
           };
-          extensions = with pkgs.nur.repos.rycee.firefox-addons; [
-            ublock-origin
-            unpaywall
-            reddit-enhancement-suite
-            react-devtools
-          ];
+           extensions = with pkgs.nur.repos.rycee.firefox-addons; [
+             ublock-origin
+             unpaywall
+             reddit-enhancement-suite
+             react-devtools
+           ];
         };
       };
     };
@@ -122,7 +121,6 @@ in {
     };
 
     neovim = import ./neovim.nix { vimPlugins = pkgs.vimPlugins; };
-
     tmux = import ./tmux.nix { inherit pkgs; };
 
     sbt = { enable = true; };
@@ -190,199 +188,164 @@ in {
     vscode = {
       enable = true;
       mutableExtensionsDir = true;
-      extensions = with pkgs.vscode-extensions;
-        [
-          # vscode-monochrome
-          brettm12345.nixfmt-vscode
-          # github.copilot
-          elixir-lsp.vscode-elixir-ls
-          graphql.vscode-graphql
-          graphql.vscode-graphql-syntax
-          vscode-copilot
-          golang.go
-          hashicorp.terraform
-          jnoortheen.nix-ide
-          scala-lang.scala
-          scalameta.metals
-          vscode-elixir
-          vscode-monochrome-dark
-          vscode-quickopener
-          vscodevim.vim
-          vspacecode.vspacecode
-          vspacecode.whichkey
-          zxh404.vscode-proto3
-        ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
-          {
-            name = "apc-extension";
-            publisher = "drcika";
-            version = "0.3.0";
-            sha256 = "sha256-do3QYBq83XcqD2jSMC+q+2mQHPiodpDA+OJdT0Zh7uc=";
-          }
-          {
-            name = "vscode-bazel";
-            publisher = "BazelBuild";
-            version = "0.7.0";
-            sha256 = "sha256-/a34MMsHy7zmGrVAtjMWKmulwS+lip3J1YugkACMmxc=";
-          }
-        ];
-      userSettings = {
-        "[nix]"."editor.tabSize" = 2;
-        "nix.enableLanguageServer" = true;
+      profiles = {
+        default = {
+          extensions = with pkgs.vscode-extensions;
+            [
+              # vscode-monochrome
+              brettm12345.nixfmt-vscode
+              # github.copilot
+              graphql.vscode-graphql
+              graphql.vscode-graphql-syntax
+              vscode-copilot
+              golang.go
+              hashicorp.terraform
+              jnoortheen.nix-ide
+              scala-lang.scala
+              scalameta.metals
+              vscode-monochrome-dark
+              vscode-quickopener
+              vscodevim.vim
+              vspacecode.vspacecode
+              vspacecode.whichkey
+              zxh404.vscode-proto3
+            ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [{
+              name = "apc-extension";
+              publisher = "drcika";
+              version = "0.3.9";
+              sha256 =
+                "54c508086bc0156ac6fee2f768628d508b75011a2f73ce13c648e04a45eea0c1";
+            }];
 
-        "vim.easymotion" = true;
-        "vim.useSystemClipboard" = true;
-        "vim.normalModeKeyBindingsNonRecursive" = [
-          {
-            "before" = [ "<space>" ];
-            "commands" = [ "vspacecode.space" ];
-          }
-          {
-            "before" = [ "," ];
-            "commands" = [
-              "vspacecode.space"
-              {
-                "command" = "whichkey.triggerKey";
-                "args" = "m";
-              }
-            ];
-          }
-        ];
-        "vim.visualModeKeyBindingsNonRecursive" = [
-          {
-            "before" = [ "<space>" ];
-            "commands" = [ "vspacecode.space" ];
-          }
-          {
-            "before" = [ "," ];
-            "commands" = [
-              "vspacecode.space"
-              {
-                "command" = "whichkey.triggerKey";
-                "args" = "m";
-              }
-            ];
-          }
-        ];
+            userSettings = {
+              "[nix]"."editor.tabSize" = 2;
+              "nix.enableLanguageServer" = true;
+              "vim.easymotion" = true;
+              "vim.useSystemClipboard" = true;
+              "vim.normalModeKeyBindingsNonRecursive" = [
+                {
+                  "before" = [ "<space>" ];
+                  "commands" = [ "vspacecode.space" ];
+                }
+                {
+                  "before" = [ "," ];
+                  "commands" = [
+                    "vspacecode.space"
+                    {
+                      "command" = "whichkey.triggerKey";
+                      "args" = "m";
+                    }
+                  ];
+                }
+              ];
+              "vim.visualModeKeyBindingsNonRecursive" = [
+                {
+                  "before" = [ "<space>" ];
+                  "commands" = [ "vspacecode.space" ];
+                }
+                {
+                  "before" = [ "," ];
+                  "commands" = [
+                    "vspacecode.space"
+                    {
+                      "command" = "whichkey.triggerKey";
+                      "args" = "m";
+                    }
+                  ];
+                }
+              ];
 
-        "files.watcherExclude" = {
-          "**/.bloop" = true;
-          "**/.metals" = true;
-          "**/.ammonite" = true;
-        };
+              "files.watcherExclude" = {
+                "**/.bloop" = true;
+                "**/.metals" = true;
+                "**/.ammonite" = true;
+              };
 
-        "editor.fontFamily" = "'Monaspace Neon', monospace";
-        "editor.fontSize" = 15;
-        "editor.fontLigatures" = true;
-        "editor.formatOnSave" = true;
-        "editor.bracketPairColorization.enabled" = false;
-        "editor.inlineSuggest.enabled" = true;
-        "editor.minimap.enabled" = false;
-        "editor.inlayHints.enabled" = "on";
-        "editor.inlayHints.fontSize" = 11;
-        "editor.tokenColorCustomizations" = { };
+              "editor.fontFamily" = "'Monaspace Neon', monaspace";
+              "editor.fontSize" = 15;
+              "editor.fontLigatures" = true;
+              "editor.formatOnSave" = true;
+              "editor.bracketPairColorization.enabled" = false;
+              "editor.inlineSuggest.enabled" = true;
+              "editor.minimap.enabled" = false;
+              "editor.inlayHints.enabled" = "on";
+              "editor.inlayHints.fontSize" = 11;
+              "editor.tokenColorCustomizations" = { };
 
-        "metals.suggestLatestUpgrade" = true;
+              "metals.suggestLatestUpgrade" = true;
 
-        "github.copilot.enable" = {
-          "*" = true;
-          "yaml" = true;
-          "zaml" = true;
-          "zed" = true;
-          "plaintext" = false;
-          "markdown" = false;
-          "scala" = true;
-        };
+              "github.copilot.enable" = {
+                "*" = true;
+                "yaml" = true;
+                "zaml" = true;
+                "plaintext" = false;
+                "markdown" = false;
+                "scala" = true;
+                "toml" = true;
+                "nix" = true;
+              };
 
-        "window.zoomLevel" = 1;
-        "workbench.colorTheme" = "Monochrome Dark";
-        "workbench.preferredDarkColorTheme" = "Monochrome Dark";
-        "workbench.colorCustomizations" = {
-          "[Monochrome Dark]" = {
-            "editorInlayHint.foreground" = "#606060";
-            "editorInlayHint.background" = "#1a1a1a";
-            "editorInlayHint.typeForeground" = "#606060";
-            "editorInlayHint.parameterForeground" = "#606060";
-          };
-        };
+              "window.zoomLevel" = 1;
+              "workbench.colorTheme" = "Monochrome Dark";
+              "workbench.preferredDarkColorTheme" = "Monochrome Dark";
+              "workbench.colorCustomizations" = {
+                "[Monochrome Dark]" = {
+                  "editorInlayHint.foreground" = "#606060";
+                  "editorInlayHint.background" = "#1a1a1a";
+                  "editorInlayHint.typeForeground" = "#606060";
+                  "editorInlayHint.parameterForeground" = "#606060";
+                };
+              };
 
-        "apc.activityBar" = {
-          "position" = "bottom";
-          "hideSettings" = true;
-          "size" = 20;
-        };
+              "apc.activityBar" = {
+                "position" = "bottom";
+                "hideSettings" = true;
+                "size" = 20;
+              };
 
-        "apc.statusBar" = {
-          "position" = "editor-bottom";
-          "height" = 22;
-          "fontSize" = 12;
-        };
+              "apc.statusBar" = {
+                "position" = "editor-bottom";
+                "height" = 22;
+                "fontSize" = 12;
+              };
 
-        "apc.electron" = {
-          "titleBarStyle" = "hiddenInset";
-          "trafficLightPosition" = {
-            "x" = 8;
-            "y" = 10;
-          };
-        };
+              "apc.electron" = {
+                "titleBarStyle" = "hiddenInset";
+                "trafficLightPosition" = {
+                  "x" = 8;
+                  "y" = 10;
+                };
+              };
 
-        "apc.header" = {
-          "height" = 34;
-          "fontSize" = 14;
-        };
+              "apc.header" = {
+                "height" = 34;
+                "fontSize" = 14;
+              };
 
-        "apc.listRow" = {
-          "height" = 21;
-          "fontSize" = 13;
+              "apc.listRow" = {
+                "height" = 21;
+                "fontSize" = 13;
+              };
+            };
         };
       };
-    };
-    wezterm = {
-      enable = true;
-      extraConfig = ''
-        -- Pull in the wezterm API
-        local wezterm = require 'wezterm'
-
-        -- This table will hold the configuration.
-        local config = {}
-
-        -- In newer versions of wezterm, use the config_builder which will
-        -- help provide clearer error messages
-        if wezterm.config_builder then
-          config = wezterm.config_builder()
-        end
-
-        -- This is where you actually apply your config choices
-
-        -- For example, changing the color scheme:
-        config.color_scheme = 'Dark Pastel'
-
-        config.font = wezterm.font('Monaspace Neon')
-        config.font_size = 16
-        config.enable_tab_bar = false
-        config.window_padding = {
-          left = "60px",
-          right = "60px",
-          top = "60px",
-          bottom = "60px",
-        }
-        config.window_decorations = "RESIZE | MACOS_FORCE_DISABLE_SHADOW"
-
-
-        -- and finally, return the configuration to wezterm
-        return config
-      '';
     };
 
     zsh = import ./zsh.nix {
       inherit pkgs;
       inherit config;
     };
+
+    zoxide = {
+      enable = true;
+      enableZshIntegration = true;
+    };
   };
 
   home = {
     username = "ani";
     homeDirectory = "/Users/ani";
-    stateVersion = "23.05";
+    stateVersion = "25.11";
     packages = allPackages;
     sessionVariables = {
       EDITOR = "nvim";

@@ -5,7 +5,6 @@ let
 in
 {
   enable = true;
-  package = pkgsMaster.gitAndTools.gitFull;
   userName = "aniamer";
   userEmail = "ani@soundtrackyourbrand.com";
   ignores = [
