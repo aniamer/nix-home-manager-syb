@@ -1,4 +1,4 @@
- { stdenv, fetchurl, undmg }:
+ { stdenv, lib, fetchurl, undmg }:
 
  stdenv.mkDerivation rec {
    pname = "obsidian";
@@ -18,7 +18,7 @@
      sha256 = "sha256-mcJZvbxSIf1QgX9Ri3Dpv57hdeiQdDkDyYB7x3hmj0c=";
    };
  
-   meta = with stdenv.lib; {
+   meta = with lib; {
      description = "VLC";
      homepage = "https://https://www.videolan.org/vlc//";
      maintainers = [ maintainers.frekw ];

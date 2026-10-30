@@ -1,4 +1,4 @@
- { stdenv, fetchurl, undmg }:
+ { stdenv, lib, fetchurl, undmg }:
 
  stdenv.mkDerivation rec {
    pname = "firefox-darwin";
@@ -18,7 +18,7 @@
      sha256 = "sha256-CXexNgIk690EiNNKHKwBSzAdx7Gm3eCBV6OR0NFz76k=";
    };
  
-   meta = with stdenv.lib; {
+   meta = with lib; {
      description = "The Firefox web browser";
      homepage = "https://www.mozilla.org/en-US/firefox";
      maintainers = [ maintainers.frekw ];

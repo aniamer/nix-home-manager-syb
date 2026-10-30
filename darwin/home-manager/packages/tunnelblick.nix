@@ -1,4 +1,4 @@
- { stdenv, fetchurl, undmg }:
+ { stdenv, lib, fetchurl, undmg }:
 
  stdenv.mkDerivation rec {
    pname = "tunnelblick";
@@ -18,7 +18,7 @@
      sha256 = "b3310a7435543c3047fd8500297fde7825f5ceb89e194f6adec0a3ee773d669d";
    };
  
-   meta = with stdenv.lib; {
+   meta = with lib; {
      description = "Tunnelblick VPN";
      homepage = "https://tunnelblick.net/";
      maintainers = [ maintainers.frekw ];

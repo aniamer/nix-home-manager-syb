@@ -28,6 +28,7 @@ compdef _gt_yargs_completions gt
 #
 
 export PATH="${PATH}:${HOME}/.krew/bin"
+export PATH="/Users/ani/.local/bin:$PATH"
 export PATH="${PATH}:${HOME}/Library/Application Support/Coursier/bin"
 export PATH="${PATH}:${HOME}/go/bin"
 export WORDCHARS=''

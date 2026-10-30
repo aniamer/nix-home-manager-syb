@@ -2,7 +2,6 @@
 
 let
   # pkgsMaster = import (fetchTarball "https://github.com/nixos/nixpkgs/archive/master.tar.gz") {};
-  altair = pkgs.callPackage ./packages/altair.nix { };
   # appLauncher = pkgs.callPackage ./packages/app.nix {};
   kubent = pkgs.callPackage ./packages/kubent.nix { };
   obsidian = pkgs.callPackage ./packages/obsidian.nix { };
@@ -61,9 +60,6 @@ let
     fluxcd
   ];
   homePackages = with pkgs; [
-    # adr
-    altair
-    # appLauncher
     bash
     bat
     clang-tools
@@ -71,16 +67,14 @@ let
     fd
     ffmpeg
     go-outline
-    # graalvm19-ce
     grpcurl
     httpie
     jq
     keybase
-    # mkchromecast
     ninja
     nixfmt-rfc-style
-    python312
-
+    python314
+    argo-workflows
     reattach-to-user-namespace
     rectangle
     ripgrep
@@ -120,6 +114,9 @@ let
     zoxide
     gnutar
     iterm2
+    cdk8s-cli
+    biome
+    hyperfine
   ];
 
 in

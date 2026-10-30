@@ -1,4 +1,4 @@
- { stdenv, fetchurl, undmg }:
+ { stdenv, lib, fetchurl, undmg }:
 
  stdenv.mkDerivation rec {
    pname = "obsidian";
@@ -18,7 +18,7 @@
      sha256 = "sha256-ydLWr+Snkza9G+R7HbPuUdoZsL25Uj+KDos67Mq/urY=";
    };
 
-   meta = with stdenv.lib; {
+   meta = with lib; {
      description = "Obsidian";
      homepage = "https://obsidian.md/";
      maintainers = [ maintainers.frekw ];
